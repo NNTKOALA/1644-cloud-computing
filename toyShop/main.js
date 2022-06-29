@@ -66,7 +66,6 @@ app.get('/insert',(req,res)=>{
     res.render("newToy")
 })
 
-
 const PORT = process.env.PORT || 5000
 app.listen(PORT)
 console.log('Server is running!')
