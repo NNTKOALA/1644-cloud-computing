@@ -2,12 +2,12 @@ var express = require('express')
 var app = express()
 
 app.set('view engine', 'hbs')
-app.use(express.urlencoded({extended:true}))
+app.use(express.urlencoded({ extended: true }))
 
 var MongoClient = require('mongodb').MongoClient
 var url = 'mongodb+srv://nguyentrung:nntrung382k2@cluster0.ahp8d.mongodb.net/test'
 
-app.post('/search',async (req,res)=>{
+app.post('/search', async (req, res) => {
     let name = req.body.txtName
 
     //1. ket noi den server co dia chi trong url
@@ -15,37 +15,42 @@ app.post('/search',async (req,res)=>{
     //truy cap Database ATNToys
     let dbo = server.db("ATNToys")
     //get data
-    let products = await dbo.collection('product').find({'name': new RegExp(name,'i')}).toArray()
-    res.render('allToys',{'products':products})
+    let products = await dbo.collection('product').find({ 'name': new RegExp(name, 'i') }).toArray()
+    res.render('allToys', { 'products': products })
 })
 
-app.get('/',async (req,res)=>{
+app.get('/', async (req, res) => {
     //1. ket noi den server co dia chi trong url
     let server = await MongoClient.connect(url)
     //truy cap Database ATNToys
     let dbo = server.db("ATNToys")
     //get data
     let products = await dbo.collection('product').find().toArray()
-    res.render('allToys',{'products':products})
+    res.render('allToys', { 'products': products })
 })
 
-app.post('/newProduct', async (req,res)=>{
+app.post('/newProduct', async (req, res) => {
     let name = req.body.txtName
     let price = req.body.txtPrice
     let picture = req.body.txtPicture
-    if (name.length <= 2) {
+    if (name.length < 2) {
         res.render('newToy', {
             'nameError': 'Name must be at least 2 characters'
         })
         return
     }
-    for(i=0;i<price.length; i++){
-        if(isNaN(price[i])){
-            res.render('newToy', {
-                'priceError': 'Price must be number'
-            })
-            return
-        }
+    // for(i=0;i<price.length; i++){
+    //     if(isNaN(price[i])){
+    //         res.render('newToy', {
+    //             'priceError': 'Price must be number'
+    //         })
+    //         return
+    //     }
+    // }
+    if (price > 10) {
+        res.render('newToy', {
+            'priceError': 'Error'
+        })
     }
     let product = {
         'name': name,
@@ -62,7 +67,7 @@ app.post('/newProduct', async (req,res)=>{
     res.redirect('/')
 })
 
-app.get('/insert',(req,res)=>{
+app.get('/insert', (req, res) => {
     res.render("newToy")
 })
 
